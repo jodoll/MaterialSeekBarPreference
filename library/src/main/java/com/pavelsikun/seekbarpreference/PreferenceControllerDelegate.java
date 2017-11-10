@@ -180,7 +180,7 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
                     public boolean persistInt(int value) {
                         setCurrentValue(value);
                         seekBarView.setOnSeekBarChangeListener(null);
-                        seekBarView.setProgress(currentValue - minValue);
+                        seekBarView.setProgress((currentValue - minValue) / interval);
                         seekBarView.setOnSeekBarChangeListener(PreferenceControllerDelegate.this);
 
                         valueView.setText(String.valueOf(currentValue));
@@ -265,7 +265,7 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
                 seekBarView.setMax(maxValue);
             }
 
-            seekBarView.setProgress(currentValue - minValue);
+            seekBarView.setProgress((currentValue - minValue) / interval);
         }
     }
 
@@ -292,7 +292,7 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
 
     void setCurrentValue(int value) {
         if(value < minValue) value = minValue;
-        if(value > maxValue) value = maxValue;
+        if(value > maxValue * interval) value = maxValue * interval;
 
         if (changeValueListener != null) {
             if (!changeValueListener.onChange(value)) {
@@ -301,7 +301,7 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
         }
         currentValue = value;
         if(seekBarView != null)
-            seekBarView.setProgress(currentValue - minValue);
+            seekBarView.setProgress((currentValue - minValue) / interval);
 
         if(persistValueListener != null) {
             persistValueListener.persistInt(value);
