@@ -60,7 +60,7 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
         void setEnabled(boolean enabled);
     }
 
-    PreferenceControllerDelegate(Context context, Boolean isView) {
+    PreferenceControllerDelegate(Context context, boolean isView) {
         this.context = context;
         this.isView = isView;
     }
@@ -96,8 +96,9 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
             TypedArray androidAttributes = context.obtainStyledAttributes(attrs, androidAttributeIndices);
 
             try {
-                minValue = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_minValue, DEFAULT_MIN_VALUE);
-                interval = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_interval, DEFAULT_INTERVAL);
+                interval = Math.max(customAttributes.getInt(R.styleable.SeekBarPreference_msbp_interval, DEFAULT_INTERVAL), 1);
+                int saved_minValue = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_minValue, DEFAULT_MIN_VALUE);
+                minValue = saved_minValue / interval;
                 int saved_maxValue = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_maxValue, DEFAULT_MAX_VALUE);
                 maxValue = (saved_maxValue - minValue) / interval;
                 dialogEnabled = customAttributes.getBoolean(R.styleable.SeekBarPreference_msbp_dialogEnabled, DEFAULT_DIALOG_ENABLED);
@@ -299,7 +300,7 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
 
     void setCurrentValue(int value) {
         if(value < minValue) value = minValue;
-        if(value > maxValue * interval) value = maxValue * interval;
+        if(value > (maxValue * interval) + minValue) value = (maxValue * interval) + minValue;
 
         if (changeValueListener != null) {
             if (!changeValueListener.onChange(value)) {
