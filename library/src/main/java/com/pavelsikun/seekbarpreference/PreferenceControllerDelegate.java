@@ -88,16 +88,22 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
             isEnabled = DEFAULT_IS_ENABLED;
         }
         else {
-            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SeekBarPreference);
-            try {
-                minValue = a.getInt(R.styleable.SeekBarPreference_msbp_minValue, DEFAULT_MIN_VALUE);
-                interval = a.getInt(R.styleable.SeekBarPreference_msbp_interval, DEFAULT_INTERVAL);
-                int saved_maxValue = a.getInt(R.styleable.SeekBarPreference_msbp_maxValue, DEFAULT_MAX_VALUE);
-                maxValue = (saved_maxValue - minValue) / interval;
-                dialogEnabled = a.getBoolean(R.styleable.SeekBarPreference_msbp_dialogEnabled, DEFAULT_DIALOG_ENABLED);
+            TypedArray customAttributes = context.obtainStyledAttributes(attrs, R.styleable.SeekBarPreference);
 
-                measurementUnit = a.getString(R.styleable.SeekBarPreference_msbp_measurementUnit);
-                currentValue = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "defaultValue", DEFAULT_CURRENT_VALUE);
+            int [] androidAttributeIndices = new int[] {
+                    android.R.attr.defaultValue,
+            };
+            TypedArray androidAttributes = context.obtainStyledAttributes(attrs, androidAttributeIndices);
+
+            try {
+                minValue = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_minValue, DEFAULT_MIN_VALUE);
+                interval = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_interval, DEFAULT_INTERVAL);
+                int saved_maxValue = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_maxValue, DEFAULT_MAX_VALUE);
+                maxValue = (saved_maxValue - minValue) / interval;
+                dialogEnabled = customAttributes.getBoolean(R.styleable.SeekBarPreference_msbp_dialogEnabled, DEFAULT_DIALOG_ENABLED);
+
+                measurementUnit = customAttributes.getString(R.styleable.SeekBarPreference_msbp_measurementUnit);
+                currentValue = androidAttributes.getInt(0, DEFAULT_CURRENT_VALUE);
 
 //                TODO make it work:
 //                dialogStyle = a.getInt(R.styleable.SeekBarPreference_msbp_interval, DEFAULT_DIALOG_STYLE);
@@ -105,15 +111,16 @@ class PreferenceControllerDelegate implements SeekBar.OnSeekBarChangeListener, V
                 dialogStyle = DEFAULT_DIALOG_STYLE;
 
                 if(isView) {
-                    title = a.getString(R.styleable.SeekBarPreference_msbp_view_title);
-                    summary = a.getString(R.styleable.SeekBarPreference_msbp_view_summary);
-                    currentValue = a.getInt(R.styleable.SeekBarPreference_msbp_view_defaultValue, DEFAULT_CURRENT_VALUE);
+                    title = customAttributes.getString(R.styleable.SeekBarPreference_msbp_view_title);
+                    summary = customAttributes.getString(R.styleable.SeekBarPreference_msbp_view_summary);
+                    currentValue = customAttributes.getInt(R.styleable.SeekBarPreference_msbp_view_defaultValue, DEFAULT_CURRENT_VALUE);
 
-                    isEnabled = a.getBoolean(R.styleable.SeekBarPreference_msbp_view_enabled, DEFAULT_IS_ENABLED);
+                    isEnabled = customAttributes.getBoolean(R.styleable.SeekBarPreference_msbp_view_enabled, DEFAULT_IS_ENABLED);
                 }
             }
             finally {
-                a.recycle();
+                customAttributes.recycle();
+                androidAttributes.recycle();
             }
         }
     }
